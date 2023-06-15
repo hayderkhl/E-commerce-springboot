@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class Sub_categoryDto {
 
-    private Integer Id;
+    private Integer id;
     private String name;
     private CategoryDto category;
 
@@ -17,9 +17,10 @@ public class Sub_categoryDto {
         if (sub_category == null) {return null;}
 
         return Sub_categoryDto.builder()
-                .Id(sub_category.getId())
+                .id(sub_category.getId())
                 .name(sub_category.getName())
                 .category(CategoryDto.fromEntity(sub_category.getCategory()))
+
                 .build();
     }
 

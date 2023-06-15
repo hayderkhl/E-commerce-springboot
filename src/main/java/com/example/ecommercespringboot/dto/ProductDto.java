@@ -4,6 +4,8 @@ import com.example.ecommercespringboot.models.Product;
 import lombok.Builder;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -44,9 +46,20 @@ public class ProductDto {
         product.setPrice(productDto.getPrice());
         product.setCode(productDto.getCode());
         product.setDescription(productDto.getDescription());
+        product.setQuantity(productDto.getQuantity());
         product.setPhoto(productDto.getPhoto());
         product.setSubCategory(Sub_categoryDto.toEntity(productDto.getSubCategory()));
 
         return product;
+    }
+
+    public static Set<Product> fromEntitySet(Set<ProductDto> productDtos) {
+        if (productDtos == null) {
+            return null;
+        }
+
+        return productDtos.stream()
+                .map(ProductDto::toEntity)
+                .collect(Collectors.toSet());
     }
 }

@@ -1,11 +1,14 @@
 package com.example.ecommercespringboot.models;
 
+import com.example.ecommercespringboot.token.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +16,7 @@ import javax.persistence.*;
 @Builder
 @Entity
 @Table(name="customer")
-public class Customer {
+public class Customer implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,4 +44,7 @@ public class Customer {
 
     @OneToOne(mappedBy = "customer")
     private Cart cart;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Token> tokens;
 }

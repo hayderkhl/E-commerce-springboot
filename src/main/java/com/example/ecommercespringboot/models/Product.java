@@ -26,7 +26,7 @@ public class Product {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "urlphoto")
+    @Column(name = "urlphoto", columnDefinition = "LONGTEXT")
     private String photo;
 
     @Column(name = "price")

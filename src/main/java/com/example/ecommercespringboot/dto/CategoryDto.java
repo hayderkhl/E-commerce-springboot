@@ -3,11 +3,16 @@ package com.example.ecommercespringboot.dto;
 import com.example.ecommercespringboot.models.Category;
 import com.example.ecommercespringboot.models.Customer;
 import com.example.ecommercespringboot.models.Sub_category;
+import com.example.ecommercespringboot.repository.Sub_categoryRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Builder
 @Data
@@ -16,7 +21,7 @@ public class CategoryDto {
     private Integer id;
     private String name;
     @JsonIgnore
-    private List<Sub_category> subCategories;
+    private List<Sub_categoryDto> subCategories;
 
     public static CategoryDto fromEntity(Category category)
     {

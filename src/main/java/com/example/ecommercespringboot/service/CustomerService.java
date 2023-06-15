@@ -13,5 +13,7 @@ public interface CustomerService {
 
     ResponseEntity<String> login(Map<String, String> requestMap);
 
+    ResponseEntity<String> logOut();
+
     ResponseEntity<List<Customer>> getAllCustomer();
 }
