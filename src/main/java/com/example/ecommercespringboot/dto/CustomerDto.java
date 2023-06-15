@@ -1,13 +1,18 @@
 package com.example.ecommercespringboot.dto;
 
 import com.example.ecommercespringboot.models.Customer;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CustomerDto {
-
     private Integer id;
     private String first_name;
     private String second_name;
@@ -42,7 +47,7 @@ public class CustomerDto {
         Customer customer = new Customer();
         customer.setId(customerDto.getId());
         customer.setFirst_name(customerDto.getFirst_name());
-        customer.setFirst_name(customerDto.getSecond_name());
+        customer.setSecond_name(customerDto.getSecond_name());
         customer.setAddress(customerDto.getAddress());
         customer.setPhone_number(customerDto.getPhone_number());
         customer.setEmail(customerDto.getEmail());

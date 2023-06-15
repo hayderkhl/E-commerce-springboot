@@ -9,7 +9,11 @@ import com.example.ecommercespringboot.jwt.JwtUtil;
 import com.example.ecommercespringboot.models.Customer;
 import com.example.ecommercespringboot.repository.CustomerRepository;
 import com.example.ecommercespringboot.service.CustomerService;
+import com.example.ecommercespringboot.token.Token;
+import com.example.ecommercespringboot.token.TokenRepository;
+import com.example.ecommercespringboot.token.TokenType;
 import com.example.ecommercespringboot.validator.CustomerValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +30,10 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
+
+    private PasswordEncoder passwordEncoder;
 
     private CustomerRepository customerRepository;
     @Autowired
@@ -36,8 +44,8 @@ public class CustomerServiceImpl implements CustomerService {
     JwtUtil jwtUtil;
     @Autowired
     JwtFilter jwtFilter;
-
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    TokenRepository tokenRepository;
 
     @Autowired
     public CustomerServiceImpl(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
@@ -62,8 +70,10 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         dto.setRole("user");
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
         dto.setPassword(encodedPassword);
+
 
         return CustomerDto.fromEntity(customerRepository.save(
                 CustomerDto.toEntity(dto)
@@ -77,10 +87,26 @@ public class CustomerServiceImpl implements CustomerService {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(requestMap.get("email"), requestMap.get("password"))
             );
+
             if(auth.isAuthenticated()) {
 
-                    return new ResponseEntity<String>("{\"token\":\""+jwtUtil.generateToken(customerUserDetailsService.getUserDetail().getEmail(),
-                            customerUserDetailsService.getUserDetail().getRole())+"\"}", HttpStatus.OK);
+                String jwttoken = jwtUtil.generateToken(customerUserDetailsService.getUserDetail().getEmail(),
+                        customerUserDetailsService.getUserDetail().getRole());
+
+                Customer customer = customerRepository.findByEmailId(requestMap.get("email"));
+                revokeAllUserTokens(customer);
+
+                var token = Token.builder()
+                        .customer(customer)
+                        .token(jwttoken)
+                        .tokenType(TokenType.BEARER)
+                        .revoked(false)
+                        .expired(false)
+                        .build();
+
+                tokenRepository.save(token);
+
+                return new ResponseEntity<String>("{\"token\":\""+jwttoken+"\"}", HttpStatus.OK);
             }
 
         } catch (Exception ex) {
@@ -91,11 +117,30 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public ResponseEntity<String> logOut() {
+        return null;
+    }
+
+    @Override
     public ResponseEntity<List<Customer>> getAllCustomer() {
         return null;
     }
 
     public boolean isEmailExists(String email) {
         return customerRepository.existsByEmail(email);
+    }
+
+    private void revokeAllUserTokens(Customer customer)
+    {
+        //we need only one token valid we gonna make the others expired and revoked
+        var validCustomerTokens = tokenRepository.findAllValidTokenByCustomer(customer.getId());
+        if (validCustomerTokens.isEmpty())
+            return;
+
+        validCustomerTokens.forEach(t -> {
+            t.setRevoked(true);
+            t.setExpired(true);
+        });
+        tokenRepository.saveAll(validCustomerTokens);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ecommercespringboot.jwt;
 
+import com.example.ecommercespringboot.token.TokenRepository;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +23,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
     @Autowired
     private CustomerDetailsService customerUserDetailsService;
+    @Autowired
+    private TokenRepository tokenRepository;
 
     Claims claims = null;
     private String userName = null;
@@ -41,9 +44,15 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
                 //to validate the user i have to take :
                 UserDetails userDetails = customerUserDetailsService.loadUserByUsername(userName);
-                if (jwtUtil.validateToken(token, userDetails)) {
+
+                var isTokenValid = tokenRepository.findByToken(token)
+                        .map(t-> !t.isExpired() && !t.isRevoked())
+                        .orElse(false);
+
+                if (jwtUtil.validateToken(token, userDetails) && isTokenValid) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities()
                     );
