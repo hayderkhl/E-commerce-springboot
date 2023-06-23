@@ -52,14 +52,4 @@ public class ProductDto {
 
         return product;
     }
-
-    public static Set<Product> fromEntitySet(Set<ProductDto> productDtos) {
-        if (productDtos == null) {
-            return null;
-        }
-
-        return productDtos.stream()
-                .map(ProductDto::toEntity)
-                .collect(Collectors.toSet());
-    }
 }

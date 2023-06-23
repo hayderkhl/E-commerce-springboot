@@ -10,7 +10,7 @@ public enum ErrorCodes {
     CATEGORY_DOES_NOT_EXIST(1005),
     CATEGORY_NOT_FOUND(1006), Sub_CATEGORY_NOT_FOUND(1007), 
     PRODUCT_NOT_VALID(1008), PRODUCT_NOT_FOUND(1009), IMAGE_FILE_NOT_VALID(1010)
-    , NOT_AUTHORIZED(1011);
+    , NOT_AUTHORIZED(1011), CUSTOMER_CART_NOT_FOUND(1012);
     private int code;
     ErrorCodes(int code) {
         this.code = code;

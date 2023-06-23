@@ -1,6 +1,7 @@
 package com.example.ecommercespringboot.service.serviceImpl;
 
 import com.example.ecommercespringboot.dto.CustomerDto;
+import com.example.ecommercespringboot.exception.EntityNotFoundException;
 import com.example.ecommercespringboot.exception.ErrorCodes;
 import com.example.ecommercespringboot.exception.InvalidEntityException;
 import com.example.ecommercespringboot.jwt.CustomerDetailsService;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -124,6 +126,21 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseEntity<List<Customer>> getAllCustomer() {
         return null;
+    }
+
+    @Override
+    public CustomerDto getCustomerByID(Integer id) {
+
+        if(id == null) {
+            log.error("customer is null");
+            return null;
+        }
+        Optional<Customer> customer = customerRepository.findById(id);
+        return Optional.of(CustomerDto.fromEntity(customer.get()))
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No Customer with this ID"+ id + " found in DB"
+                        , ErrorCodes.CUSTOMER_NOT_FOUND)
+                );
     }
 
     public boolean isEmailExists(String email) {
