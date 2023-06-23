@@ -1,16 +1,14 @@
 package com.example.ecommercespringboot.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-import java.util.Set;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -28,15 +26,7 @@ public class Cart {
     @JoinColumn(name = "customerid", referencedColumnName = "id")
     private Customer customer;
 
+    @OneToMany(mappedBy = "cart")
+    private List<Cart_product> cartProducts;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "cart_product",
-            joinColumns = {
-                    @JoinColumn(name = "cartid", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "productid", referencedColumnName = "id")
-            }
-    )
-    private Set<Product> products;
 }

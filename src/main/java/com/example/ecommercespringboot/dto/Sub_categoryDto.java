@@ -20,7 +20,6 @@ public class Sub_categoryDto {
                 .id(sub_category.getId())
                 .name(sub_category.getName())
                 .category(CategoryDto.fromEntity(sub_category.getCategory()))
-
                 .build();
     }
 

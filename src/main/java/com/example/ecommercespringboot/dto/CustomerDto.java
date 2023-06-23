@@ -1,15 +1,14 @@
 package com.example.ecommercespringboot.dto;
 
 import com.example.ecommercespringboot.models.Customer;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Builder
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomerDto {
@@ -21,6 +20,7 @@ public class CustomerDto {
     private String email;
     private String password;
     private String role;
+
     private CartDto cart;
 
     public static CustomerDto fromEntity(Customer customer)

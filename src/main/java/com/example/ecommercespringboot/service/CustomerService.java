@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface CustomerService {
 
@@ -16,4 +17,5 @@ public interface CustomerService {
     ResponseEntity<String> logOut();
 
     ResponseEntity<List<Customer>> getAllCustomer();
+    CustomerDto getCustomerByID(Integer id);
 }
