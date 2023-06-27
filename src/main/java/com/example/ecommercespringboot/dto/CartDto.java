@@ -2,16 +2,14 @@ package com.example.ecommercespringboot.dto;
 
 import com.example.ecommercespringboot.models.Cart;
 import com.example.ecommercespringboot.models.Cart_product;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 @Builder
 @Getter
