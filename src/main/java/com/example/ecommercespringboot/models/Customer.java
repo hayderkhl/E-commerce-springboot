@@ -45,4 +45,7 @@ public class Customer implements Serializable {
 
     @OneToMany(mappedBy = "customer")
     private List<Token> tokens;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders;
 }

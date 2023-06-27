@@ -29,4 +29,7 @@ public class Cart {
     @OneToMany(mappedBy = "cart")
     private List<Cart_product> cartProducts;
 
+    @OneToMany(mappedBy = "cart")
+    private List<Order> orders;
+
 }

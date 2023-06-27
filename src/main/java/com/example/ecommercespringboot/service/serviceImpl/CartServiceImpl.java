@@ -2,8 +2,6 @@ package com.example.ecommercespringboot.service.serviceImpl;
 
 import com.example.ecommercespringboot.dto.CartDto;
 import com.example.ecommercespringboot.dto.Cart_ProductDto;
-import com.example.ecommercespringboot.dto.CustomerDto;
-import com.example.ecommercespringboot.dto.ProductDto;
 import com.example.ecommercespringboot.exception.EntityNotFoundException;
 import com.example.ecommercespringboot.exception.ErrorCodes;
 import com.example.ecommercespringboot.exception.InvalidEntityException;
@@ -23,9 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
 
 @Service
 @Slf4j
