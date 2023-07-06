@@ -3,20 +3,19 @@ package com.example.ecommercespringboot.service.serviceImpl;
 import com.example.ecommercespringboot.dto.*;
 import com.example.ecommercespringboot.exception.EntityNotFoundException;
 import com.example.ecommercespringboot.exception.ErrorCodes;
-import com.example.ecommercespringboot.exception.InvalidEntityException;
 import com.example.ecommercespringboot.jwt.JwtFilter;
 import com.example.ecommercespringboot.models.*;
 import com.example.ecommercespringboot.repository.*;
 import com.example.ecommercespringboot.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,11 +33,17 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
-    private ProductRepository productRepository;
-    @Autowired
     private CartProductRepository cartProductRepository;
     @Autowired
     private OrderProductRepository orderProductRepository;
+    @Autowired
+    private OrderStatusRepository orderStatusRepository;
+    @Autowired
+    private OrderStatusHistoryRepository orderStatusHistoryRepository;
+
+    public OrderServiceImpl(OrderStatusHistoryRepository orderStatusHistoryRepository) {
+        this.orderStatusHistoryRepository = orderStatusHistoryRepository;
+    }
 
     @Override
     public ResponseEntity<?> placeOrder(OrderDto orderDto) {
@@ -53,10 +58,13 @@ public class OrderServiceImpl implements OrderService {
         order.setCart(cart);
         order.setCustomer(customer);
         order.setAddress(customer.getAddress());
-        order.setOrderStatus(orderDto.getOrderStatus());
-
+        List<OrderStatus> orderStatuses = orderStatusRepository.findAll();
+        if (!orderStatuses.isEmpty()) {
+            OrderStatus firstOrderStatus = orderStatuses.get(0);
+            order.setOrderStatus(firstOrderStatus);
+        }
         // Save the Order entity to the repository
-       Order savedOrder = orderRepository.save(order);
+       orderRepository.save(order);
 
         List<Cart_product> cartProducts = cart.getCartProducts();
         for (Cart_product cartProduct : cartProducts) {
@@ -93,4 +101,34 @@ public class OrderServiceImpl implements OrderService {
                         , ErrorCodes.CUSTOMER_CART_NOT_FOUND)
                 );
     }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> changeOrderStatus(Integer newOrderStatus, Integer orderid) {
+
+        Optional<Order> orderOptional = orderRepository.findById(orderid);
+        if (orderOptional.isEmpty()) {
+            throw new EntityNotFoundException("the order id does not exist", ErrorCodes.ORDER_DOES_NOT_EXIST);
+        }
+
+        Order myOrder = orderOptional.get();
+        OrderStatus oldOrderStatus = myOrder.getOrderStatus();
+        Optional<OrderStatus> orderStatus = orderStatusRepository.findById(newOrderStatus);
+        if (orderStatus.isEmpty()) {
+            throw new EntityNotFoundException("the ordercstatus id does not exist", ErrorCodes.ORDER_STATUS_DOES_NOT_EXIST);
+        }
+
+        myOrder.setOrderStatus(orderStatus.get());
+
+        Order_status_history orderStatusHistory = new Order_status_history();
+        orderStatusHistory.setFrom_status(oldOrderStatus.getName());
+        orderStatusHistory.setTo_status(orderStatus.get().getName());
+        orderStatusHistory.setOrder(myOrder);
+
+        orderRepository.save(myOrder);
+        orderStatusHistoryRepository.save(orderStatusHistory);
+
+        return ResponseEntity.ok("the order status updated successfully");
+    }
+
 }

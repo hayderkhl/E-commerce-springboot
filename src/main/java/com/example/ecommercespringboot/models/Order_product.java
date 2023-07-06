@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 @Table(name="order_product")
 public class Order_product {
 
-
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         private Integer id;
