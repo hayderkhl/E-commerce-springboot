@@ -1,7 +1,6 @@
 package com.example.ecommercespringboot.models;
 
 import lombok.*;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,9 +21,6 @@ public class Order {
     @Column(name = "code")
     private String Code;
 
-    @Column(name = "oderstatus")
-    private String orderStatus;
-
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<Order_product> orderProducts;
 
@@ -35,11 +31,18 @@ public class Order {
     @Column(name = "orderdate")
     private LocalDateTime orderDate;
 
+    @OneToOne
+    @JoinColumn(name = "order_status_id")
+    private OrderStatus orderStatus;
+
     @ManyToOne
     @JoinColumn(name = "cartid", referencedColumnName = "id", nullable = false)
     private Cart cart;
 
     @Column(name = "address")
     private String address;
+
+    @OneToMany(mappedBy = "order")
+    private List<Order_status_history> orderStatusHistoryList;
 
 }

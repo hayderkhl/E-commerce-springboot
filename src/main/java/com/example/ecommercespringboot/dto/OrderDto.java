@@ -23,9 +23,11 @@ public class OrderDto {
     private CustomerDto customer;
     private Integer id_customer;
     private  Integer id_cart;
-    private String orderStatus;
+//    private String orderStatus;
 
+    private OrderStatusDto orderStatusDto;
     private List<Order_productDTO> orderProducts;
+    private List<OrderStatusHistoryDto> orderStatusHistory;
 
 
     public static OrderDto fromEntity(Order order)
@@ -39,7 +41,9 @@ public class OrderDto {
                 .id_cart(order.getCart().getId())
                 .id_customer(order.getCustomer().getId())
                 .orderDate(order.getOrderDate())
-                .orderStatus(order.getOrderStatus())
+                .orderStatusHistory(mapOrderStatus(order.getOrderStatusHistoryList()))
+                //.orderStatus(order.getOrderStatus())
+                .orderStatusDto(OrderStatusDto.fromEntity(order.getOrderStatus()))
                 .customer(CustomerDto.fromEntity(order.getCustomer()))
                 .cart(CartDto.fromEntity(order.getCart()))
                 .orderProducts(mapOrderProducts(order.getOrderProducts()))
@@ -56,8 +60,9 @@ public class OrderDto {
         order.setCode(orderDto.getCode());
         order.setCart(CartDto.toEntity(orderDto.getCart()));
         order.setCustomer(CustomerDto.toEntity(orderDto.getCustomer()));
+        order.setOrderStatus(OrderStatusDto.toEntity(orderDto.orderStatusDto));
         order.setOrderDate(orderDto.getOrderDate());
-        order.setOrderStatus(orderDto.getOrderStatus());
+        //order.setOrderStatus(orderDto.getOrderStatus());
         order.setAddress(orderDto.getAddress());
 
         return order;
@@ -71,6 +76,16 @@ public class OrderDto {
             }
         }
         return orderProductDTOS;
+    }
+
+    private static List<OrderStatusHistoryDto> mapOrderStatus(List<Order_status_history> orderStatusHistoryList) {
+        List<OrderStatusHistoryDto> orderStatusHistoryDtos1 = new ArrayList<>();
+        if (orderStatusHistoryList != null) {
+            for (Order_status_history orderstatus : orderStatusHistoryList) {
+                orderStatusHistoryDtos1.add(OrderStatusHistoryDto.fromEntity(orderstatus));
+            }
+        }
+        return orderStatusHistoryDtos1;
     }
 
 }

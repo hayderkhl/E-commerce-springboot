@@ -54,7 +54,6 @@ public class CustomerDto {
         customer.setPassword(customerDto.getPassword());
         customer.setRole(customerDto.getRole());
         customer.setCart(CartDto.toEntity(customerDto.getCart()));
-
         return customer;
     }
 }
